@@ -9,6 +9,9 @@
     },
     "extra": {
         "class": "Kwf\\ComposerExtraAssets\\Plugin",
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        },
         "require-npm": {
             "bower": "*"
         },
