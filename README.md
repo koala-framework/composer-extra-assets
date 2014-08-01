@@ -7,7 +7,7 @@ have dependencies.
 Npm packages will be installed in package folder, bower will be installed in root - with
 all dependencies merged.
 
-# Example usage
+### Example usage
 
     "require": {
         "koala-framework/composer-extra-assets": "dev-master"
