@@ -1,0 +1,21 @@
+{
+    "name": "koala-framework/composer-extra-assets",
+    "type": "composer-plugin",
+    "require": {
+        "composer-plugin-api": "1.0.0"
+    },
+    "extra": {
+        "class": "Kwf\\ComposerExtraAssets\\Plugin",
+        "require-npm": {
+            "bower": "*"
+        },
+        "require-bower": {
+            "jquery": "1.*"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Kwf\\ComposerExtraAssets\\": "Kwf/ComposerExtraAssets"
+        }
+    }
+}
