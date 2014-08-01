@@ -1,5 +1,8 @@
 {
     "name": "koala-framework/composer-extra-assets",
+    "description": "Composer Plugin for installing Assets using native npm/bower",
+    "homepage": "https://github.com/koala-framework/composer-extra-assets",
+    "license": "BSD-2-Clause",
     "type": "composer-plugin",
     "require": {
         "composer-plugin-api": "1.0.0"
