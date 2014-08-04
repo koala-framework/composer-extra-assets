@@ -14,9 +14,6 @@
         },
         "require-npm": {
             "bower": "*"
-        },
-        "require-bower": {
-            "jquery": "1.*"
         }
     },
     "autoload": {
