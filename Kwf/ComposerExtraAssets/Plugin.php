@@ -36,15 +36,29 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     public function onPostUpdateInstall(Event $event)
     {
-        $this->_installNpm('.', $this->composer->getPackage());
+        $this->_installNpm('.', $this->composer->getPackage(), $event->isDevMode());
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
         foreach($packages as $package){
             if ($package instanceof \Composer\Package\CompletePackage) {
-                $this->_installNpm('vendor/'.$package->getName(), $package);
+                $this->_installNpm('vendor/'.$package->getName(), $package, false);
             }
         }
 
         $requireBower = array();
+
+        if ($event->isDevMode()) {
+            $extra = $this->composer->getPackage()->getExtra();
+            if (isset($extra['require-dev-bower'])) {
+                foreach ($extra['require-dev-bower'] as $packageName => $versionConstraint) {
+                    if (isset($requireBower[$packageName]) && $requireBower[$packageName] != $versionConstraint) {
+                        $this->io->write("<error>ERROR: {$package->getName()} requires $packageName $versionConstraint but we have already {$requireBower[$packageName]}</error>");
+                    } else {
+                        $requireBower[$packageName] = $versionConstraint;
+                    }
+                }
+            }
+        }
+
         $packages = array(
             $this->composer->getPackage()
         );
@@ -93,10 +107,23 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
     }
 
-    private function _installNpm($path, $package)
+    private function _installNpm($path, $package, $devMode)
     {
+        $dependencies = array();
+
         $extra = $package->getExtra();
+        if ($devMode) {
+            if (isset($extra['require-dev-npm']) && count($extra['require-dev-npm'])) {
+                $dependencies = array_merge($dependencies, $extra['require-dev-npm']);
+            }
+
+        }
+
         if (isset($extra['require-npm']) && count($extra['require-npm'])) {
+            $dependencies = array_merge($dependencies, $extra['require-npm']);
+        }
+
+        if ($dependencies) {
             $prevCwd = getcwd();
             chdir($path);
             if (file_exists('package.json')) {
@@ -110,7 +137,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 'description' => ' ',
                 'readme' => ' ',
                 'repository' => array('type'=>'git'),
-                'dependencies' => $extra['require-npm'],
+                'dependencies' => $dependencies,
             );
             file_put_contents('package.json', json_encode($packageJson));
             $this->io->write("");

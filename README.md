@@ -14,9 +14,12 @@ all dependencies merged.
     },
     "extra": {
         "require-npm": {
-            "grunt": "0.4.*",
+            "grunt": "0.4.*"
         },
         "require-bower": {
             "jquery": "*"
-        }
+        },
+        "require-dev-bower": {
+            "qunit": "*"
+        },
     }
