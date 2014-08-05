@@ -77,6 +77,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 'dependencies' => $requireBower,
             );
             file_put_contents('bower.json', json_encode($packageJson));
+            $config = array(
+                'directory' => 'vendor/bower_components'
+            );
+            file_put_contents('.bowerrc', json_encode($config));
             $this->io->write("");
             $this->io->write("installing bower dependencies...");
             $cmd = "vendor/koala-framework/composer-extra-assets/node_modules/.bin/bower install";
@@ -85,6 +89,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $this->io->write("<error>bower install failed</error>");
             }
             unlink('bower.json');
+            unlink('.bowerrc');
         }
     }
 
