@@ -21,5 +21,5 @@ all dependencies merged.
         },
         "require-dev-bower": {
             "qunit": "*"
-        },
+        }
     }

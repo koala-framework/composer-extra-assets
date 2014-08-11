@@ -105,7 +105,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             if ($retVar) {
                 $this->io->write("<error>bower install failed</error>");
             }
-            unlink('bower.json');
         }
     }
 
