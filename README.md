@@ -7,6 +7,8 @@ have dependencies.
 Npm packages will be installed in package folder, bower will be installed in root - with
 all dependencies merged.
 
+[Introduction](http://www.nikosams.net/blog/17_composer_npm_bower_assets_installation_using_composer-extra-assets)
+
 ### Example usage
 
     "require": {
