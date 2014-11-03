@@ -15,6 +15,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
+
         $this->io = $io;
         exec('which npm', $out, $retVar);
         if ($retVar) {
@@ -40,7 +41,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
         foreach($packages as $package){
             if ($package instanceof \Composer\Package\CompletePackage) {
-                $this->_installNpm('vendor/'.$package->getName(), $package, false);
+
+                $this->_installNpm($this->composer->getConfig()->get('vendor-dir') . '/' .$package->getName(), $package, false);
             }
         }
 
@@ -94,13 +96,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
             if (!file_exists('.bowerrc')) {
                 $config = array(
-                    'directory' => 'vendor/bower_components'
+                    'directory' => $this->composer->getConfig()->get('vendor-dir') . '/bower_components'
                 );
                 file_put_contents('.bowerrc', json_encode($config));
             }
             $this->io->write("");
             $this->io->write("installing bower dependencies...");
-            $cmd = "vendor/koala-framework/composer-extra-assets/node_modules/.bin/bower install";
+            $cmd = $this->composer->getConfig()->get('vendor-dir') . "/koala-framework/composer-extra-assets/node_modules/.bin/bower install";
             passthru($cmd, $retVar);
             if ($retVar) {
                 $this->io->write("<error>bower install failed</error>");
@@ -153,3 +155,4 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
     }
 }
+
