@@ -102,7 +102,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
             $this->io->write("");
             $this->io->write("installing bower dependencies...");
-            $cmd = $this->composer->getConfig()->get('vendor-dir') . "/koala-framework/composer-extra-assets/node_modules/.bin/bower install";
+            $cmd = "nodejs ".$this->composer->getConfig()->get('vendor-dir') . "/koala-framework/composer-extra-assets/node_modules/.bin/bower install";
             passthru($cmd, $retVar);
             if ($retVar) {
                 $this->io->write("<error>bower install failed</error>");
