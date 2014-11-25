@@ -17,7 +17,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->composer = $composer;
 
         $this->io = $io;
-        exec('which npm', $out, $retVar);
+        exec('npm --version', $out, $retVar);
         if ($retVar) {
             throw new \Exception("Can't find npm, not in path");
         }
