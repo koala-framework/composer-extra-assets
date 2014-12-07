@@ -81,6 +81,19 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         if ($requireBower) {
+            $out = array();
+            $retVar = null;
+            exec("bower --version 2>&1", $out, $retVar);
+            if ($retVar) {
+                //bower isn't installed globally, install locally
+                $this->_installNpmDependencies(dirname(dirname(__DIR__)), array(
+                    'bower' => '*'
+                ));
+                $bowerBin = "node ".dirname(dirname(__DIR__)) . "/node_modules/bower/bin/bower";
+            } else {
+                $bowerBin = 'bower';
+            }
+
             if (file_exists('bower.json')) {
                 $p = json_decode(file_get_contents('bower.json'), true);
                 if ($p['name'] != 'temp-composer-extra-asssets') { //assume we can overwrite our own temp one
@@ -102,7 +115,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
             $this->io->write("");
             $this->io->write("installing bower dependencies...");
-            $cmd = "node ".$this->composer->getConfig()->get('vendor-dir') . "/koala-framework/composer-extra-assets/node_modules/bower/bin/bower install";
+            $cmd = "$bowerBin install";
             passthru($cmd, $retVar);
             if ($retVar) {
                 $this->io->write("<error>bower install failed</error>");
@@ -127,32 +140,37 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         if ($dependencies) {
-            $prevCwd = getcwd();
-            chdir($path);
-            if (file_exists('package.json')) {
-                $p = json_decode(file_get_contents('package.json'), true);
-                if ($p['name'] != 'temp-composer-extra-asssets') { //assume we can overwrite our own temp one
-                    throw new \Exception("Can't install npm dependencies as there is already a package.json");
-                }
-            }
-            $packageJson = array(
-                'name' => 'temp-composer-extra-asssets',
-                'description' => ' ',
-                'readme' => ' ',
-                'repository' => array('type'=>'git'),
-                'dependencies' => $dependencies,
-            );
-            file_put_contents('package.json', json_encode($packageJson));
-            $this->io->write("");
-            $this->io->write("installing npm dependencies in '$path'...");
-            $cmd = "npm install";
-            passthru($cmd, $retVar);
-            if ($retVar) {
-                $this->io->write("<error>npm install failed</error>");
-            }
-            unlink('package.json');
-            chdir($prevCwd);
+            $this->_installNpmDependencies($path, $dependencies);
         }
+    }
+
+    private function _installNpmDependencies($path, $dependencies)
+    {
+        $prevCwd = getcwd();
+        chdir($path);
+        if (file_exists('package.json')) {
+            $p = json_decode(file_get_contents('package.json'), true);
+            if ($p['name'] != 'temp-composer-extra-asssets') { //assume we can overwrite our own temp one
+                throw new \Exception("Can't install npm dependencies as there is already a package.json");
+            }
+        }
+        $packageJson = array(
+            'name' => 'temp-composer-extra-asssets',
+            'description' => ' ',
+            'readme' => ' ',
+            'repository' => array('type'=>'git'),
+            'dependencies' => $dependencies,
+        );
+        file_put_contents('package.json', json_encode($packageJson));
+        $this->io->write("");
+        $this->io->write("installing npm dependencies in '$path'...");
+        $cmd = "npm install";
+        passthru($cmd, $retVar);
+        if ($retVar) {
+            $this->io->write("<error>npm install failed</error>");
+        }
+        unlink('package.json');
+        chdir($prevCwd);
     }
 }
 
