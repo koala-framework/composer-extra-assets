@@ -115,10 +115,17 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
             $this->io->write("");
             $this->io->write("installing bower dependencies...");
+
             $cmd = "$bowerBin install";
             passthru($cmd, $retVar);
             if ($retVar) {
                 $this->io->write("<error>bower install failed</error>");
+            }
+
+            $cmd = "$bowerBin prune";
+            passthru($cmd, $retVar);
+            if ($retVar) {
+                $this->io->write("<error>bower prune failed</error>");
             }
         }
     }
@@ -169,6 +176,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if ($retVar) {
             $this->io->write("<error>npm install failed</error>");
         }
+
+        $cmd = "npm prune";
+        passthru($cmd, $retVar);
+        if ($retVar) {
+            $this->io->write("<error>npm prune failed</error>");
+        }
+
         unlink('package.json');
         chdir($prevCwd);
     }
