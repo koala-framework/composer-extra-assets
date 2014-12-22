@@ -106,10 +106,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 'dependencies' => $requireBower,
             );
             file_put_contents('bower.json', json_encode($packageJson));
-
             if (!file_exists('.bowerrc')) {
+                $vd = $this->composer->getConfig()->get('vendor-dir');
+                if (substr($vd, 0, strlen(getcwd())) == getcwd()) {
+                    //make vendor-dir relative go cwd
+                    $vd = substr($vd, strlen(getcwd())+1);
+                }
                 $config = array(
-                    'directory' => $this->composer->getConfig()->get('vendor-dir') . '/bower_components'
+                    'directory' => $vd . '/bower_components'
                 );
                 file_put_contents('.bowerrc', json_encode($config));
             }
