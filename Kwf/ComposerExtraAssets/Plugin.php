@@ -86,10 +86,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             exec("bower --version 2>&1", $out, $retVar);
             if ($retVar) {
                 //bower isn't installed globally, install locally
-                $this->_installNpmDependencies(dirname(dirname(__DIR__)), array(
+                $dir = $this->composer->getConfig()->get('vendor-dir').'/koala-framework/composer-extra-assets';
+                $this->_installNpmDependencies($dir, array(
                     'bower' => '*'
                 ));
-                $bowerBin = "node ".dirname(dirname(__DIR__)) . "/node_modules/bower/bin/bower";
+                $bowerBin = "node ".$dir . "/node_modules/bower/bin/bower";
             } else {
                 $bowerBin = 'bower';
             }
