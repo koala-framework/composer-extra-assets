@@ -127,7 +127,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $this->io->write("<error>bower install failed</error>");
             }
 
-            $cmd = "$bowerBin prune";
+            $cmd = "$bowerBin --allow-root prune";
             passthru($cmd, $retVar);
             if ($retVar) {
                 $this->io->write("<error>bower prune failed</error>");
