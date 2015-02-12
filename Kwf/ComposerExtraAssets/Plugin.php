@@ -121,7 +121,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $this->io->write("");
             $this->io->write("installing bower dependencies...");
 
-            $cmd = "$bowerBin install";
+            $cmd = "$bowerBin --allow-root install";
             passthru($cmd, $retVar);
             if ($retVar) {
                 $this->io->write("<error>bower install failed</error>");
