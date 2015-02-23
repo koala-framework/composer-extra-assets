@@ -124,13 +124,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $cmd = "$bowerBin --allow-root install";
             passthru($cmd, $retVar);
             if ($retVar) {
-                $this->io->write("<error>bower install failed</error>");
+                throw new \RuntimeException('bower install failed');
             }
 
             $cmd = "$bowerBin --allow-root prune";
             passthru($cmd, $retVar);
             if ($retVar) {
-                $this->io->write("<error>bower prune failed</error>");
+                throw new \RuntimeException('bower prune failed');
             }
         }
     }
@@ -179,13 +179,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $cmd = "npm install";
         passthru($cmd, $retVar);
         if ($retVar) {
-            $this->io->write("<error>npm install failed</error>");
+            throw new \RuntimeException('npm install failed');
         }
 
         $cmd = "npm prune";
         passthru($cmd, $retVar);
         if ($retVar) {
-            $this->io->write("<error>npm prune failed</error>");
+            throw new \RuntimeException('npm prune failed');
         }
 
         unlink('package.json');
