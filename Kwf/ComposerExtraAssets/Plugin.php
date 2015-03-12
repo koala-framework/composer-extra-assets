@@ -85,7 +85,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $this->_installNpmDependencies($dir, array(
                     'bower' => '*'
                 ));
-                $node = $this->composer->getConfig()->get('vendor-dir').'/bin/node';
+                $node = $this->composer->getConfig()->get('bin-dir').'/node';
                 $bowerBin = "$node ".$dir . "/node_modules/bower/bin/bower";
             } else {
                 $bowerBin = 'bower';
@@ -172,7 +172,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         file_put_contents('package.json', json_encode($packageJson));
         $this->io->write("");
         $this->io->write("installing npm dependencies in '$path'...");
-        $npm = $this->composer->getConfig()->get('vendor-dir').'/bin/npm';
+        $npm = $this->composer->getConfig()->get('bin-dir').'/npm';
         $cmd = "$npm install";
         passthru($cmd, $retVar);
         if ($retVar) {
