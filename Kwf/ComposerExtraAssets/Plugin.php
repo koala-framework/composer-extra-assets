@@ -15,12 +15,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
-
         $this->io = $io;
-        exec('npm --version 2>&1', $out, $retVar);
-        if ($retVar) {
-            throw new \Exception("Can't find npm, not in path");
-        }
     }
 
     public static function getSubscribedEvents()
@@ -90,7 +85,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $this->_installNpmDependencies($dir, array(
                     'bower' => '*'
                 ));
-                $bowerBin = "node ".$dir . "/node_modules/bower/bin/bower";
+                $node = $this->composer->getConfig()->get('vendor-dir').'/bin/node';
+                $bowerBin = "$node ".$dir . "/node_modules/bower/bin/bower";
             } else {
                 $bowerBin = 'bower';
             }
@@ -176,13 +172,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         file_put_contents('package.json', json_encode($packageJson));
         $this->io->write("");
         $this->io->write("installing npm dependencies in '$path'...");
-        $cmd = "npm install";
+        $npm = $this->composer->getConfig()->get('vendor-dir').'/bin/npm';
+        $cmd = "$npm install";
         passthru($cmd, $retVar);
         if ($retVar) {
             throw new \RuntimeException('npm install failed');
         }
 
-        $cmd = "npm prune";
+        $cmd = "$npm prune";
         passthru($cmd, $retVar);
         if ($retVar) {
             throw new \RuntimeException('npm prune failed');
