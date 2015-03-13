@@ -5,10 +5,16 @@
     "license": "BSD-2-Clause",
     "type": "composer-plugin",
     "require": {
-        "composer-plugin-api": "1.0.0"
+        "composer-plugin-api": "1.0.0",
+        "mouf/nodejs-installer": "~1.0"
     },
     "extra": {
         "class": "Kwf\\ComposerExtraAssets\\Plugin",
+        "mouf": {
+            "nodejs": {
+                "version": ">=0.10"
+            }
+        },
         "branch-alias": {
             "dev-master": "1.0-dev"
         }
