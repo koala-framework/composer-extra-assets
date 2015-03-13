@@ -17,10 +17,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->composer = $composer;
 
         $this->io = $io;
-        exec('npm --version 2>&1', $out, $retVar);
-        if ($retVar) {
-            throw new \Exception("Can't find npm, not in path");
-        }
     }
 
     public static function getSubscribedEvents()
@@ -37,6 +33,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     public function onPostUpdateInstall(Event $event)
     {
+        exec('npm --version 2>&1', $out, $retVar);
+        if ($retVar) {
+            throw new \Exception("Can't find npm, not in path");
+        }
+
         $this->_installNpm('.', $this->composer->getPackage(), $event->isDevMode());
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
         foreach($packages as $package){
