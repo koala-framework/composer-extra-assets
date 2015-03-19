@@ -12,7 +12,7 @@ all dependencies merged.
 ### Example usage
 
     "require": {
-        "koala-framework/composer-extra-assets": "1.0.*"
+        "koala-framework/composer-extra-assets": "1.1.*"
     },
     "extra": {
         "require-npm": {
