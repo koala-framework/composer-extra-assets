@@ -11,8 +11,10 @@ all dependencies merged.
 
 ### Example usage
 
+composer.json
+
     "require": {
-        "koala-framework/composer-extra-assets": "1.1.*"
+        "koala-framework/composer-extra-assets": "~1.1"
     },
     "extra": {
         "require-npm": {
