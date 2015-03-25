@@ -73,7 +73,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     foreach ($extra['require-bower'] as $packageName => $versionConstraint) {
                         if (isset($requireBower[$packageName])) {
                             $v = VersionMatcher::matchVersions($requireBower[$packageName], $versionConstraint);
-                            echo "{$requireBower[$packageName]} + $versionConstraint => $v\n";
                             if ($v === false) {
                                 throw new \Exception("{$package->getName()} requires $packageName '$versionConstraint' but we have already incompatible '{$requireBower[$packageName]}'");
                             }
