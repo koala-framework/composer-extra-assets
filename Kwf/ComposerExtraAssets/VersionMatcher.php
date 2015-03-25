@@ -20,9 +20,16 @@ class VersionMatcher
         if ($version2 == '*') {
             return $version1;
         }
+        if ($version1 == $version2) {
+            return $version1;
+        }
 
-        $v1 = Constraint::parse($version1);
-        $v2 = Constraint::parse($version2);
+        try {
+            $v1 = Constraint::parse($version1);
+            $v2 = Constraint::parse($version2);
+        } catch (\UnexpectedValueException $e) {
+            return false;
+        }
 
         if ($v1->isSubsetOf($v2)) {
             return $version1;
