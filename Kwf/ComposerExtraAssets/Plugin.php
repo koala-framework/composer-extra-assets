@@ -7,6 +7,8 @@ use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 
+use Kwf\ComposerExtraAssets\VersionMatcher;
+
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
     protected $composer;
@@ -34,7 +36,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $this->_installNpm('.', $this->composer->getPackage(), $event->isDevMode());
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
-        foreach($packages as $package){
+        foreach ($packages as $package){
             if ($package instanceof \Composer\Package\CompletePackage) {
 
                 $this->_installNpm($this->composer->getConfig()->get('vendor-dir') . '/' .$package->getName(), $package, false);
@@ -47,11 +49,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $extra = $this->composer->getPackage()->getExtra();
             if (isset($extra['require-dev-bower'])) {
                 foreach ($extra['require-dev-bower'] as $packageName => $versionConstraint) {
-                    if (isset($requireBower[$packageName]) && $requireBower[$packageName] != $versionConstraint) {
-                        $this->io->write("<error>ERROR: {$package->getName()} requires $packageName $versionConstraint but we have already {$requireBower[$packageName]}</error>");
-                    } else {
-                        $requireBower[$packageName] = $versionConstraint;
+                    $v = VersionMatcher::matchVersions($requireBower[$packageName], $versionConstraint);
+                    if ($v === false) {
+                        throw new \Exception("{$package->getName()} requires $packageName '$versionConstraint' but we have already incompatible '{$requireBower[$packageName]}'");
                     }
+                    $requireBower[$packageName] = $v;
                 }
             }
         }
@@ -60,16 +62,16 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $this->composer->getPackage()
         );
         $packages = array_merge($packages, $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages());
-        foreach($packages as $package){
+        foreach ($packages as $package){
             if ($package instanceof \Composer\Package\CompletePackage) {
                 $extra = $package->getExtra();
                 if (isset($extra['require-bower'])) {
                     foreach ($extra['require-bower'] as $packageName => $versionConstraint) {
-                        if (isset($requireBower[$packageName]) && $requireBower[$packageName] != $versionConstraint) {
-                            $this->io->write("<error>ERROR: {$package->getName()} requires $packageName $versionConstraint but we have already {$requireBower[$packageName]}</error>");
-                        } else {
-                            $requireBower[$packageName] = $versionConstraint;
+                        $v = VersionMatcher::matchVersions($requireBower[$packageName], $versionConstraint);
+                        if ($v === false) {
+                            throw new \Exception("{$package->getName()} requires $packageName '$versionConstraint' but we have already incompatible '{$requireBower[$packageName]}'");
                         }
+                        $requireBower[$packageName] = $v;
                     }
                 }
             }
