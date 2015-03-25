@@ -49,9 +49,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $extra = $this->composer->getPackage()->getExtra();
             if (isset($extra['require-dev-bower'])) {
                 foreach ($extra['require-dev-bower'] as $packageName => $versionConstraint) {
-                    $v = VersionMatcher::matchVersions($requireBower[$packageName], $versionConstraint);
-                    if ($v === false) {
-                        throw new \Exception("{$package->getName()} requires $packageName '$versionConstraint' but we have already incompatible '{$requireBower[$packageName]}'");
+                    if (isset($requireBower[$packageName])) {
+                        $v = VersionMatcher::matchVersions($requireBower[$packageName], $versionConstraint);
+                        if ($v === false) {
+                            throw new \Exception("{$package->getName()} requires $packageName '$versionConstraint' but we have already incompatible '{$requireBower[$packageName]}'");
+                        }
+                    } else {
+                        $v = $versionConstraint;
                     }
                     $requireBower[$packageName] = $v;
                 }
@@ -67,9 +71,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $extra = $package->getExtra();
                 if (isset($extra['require-bower'])) {
                     foreach ($extra['require-bower'] as $packageName => $versionConstraint) {
-                        $v = VersionMatcher::matchVersions($requireBower[$packageName], $versionConstraint);
-                        if ($v === false) {
-                            throw new \Exception("{$package->getName()} requires $packageName '$versionConstraint' but we have already incompatible '{$requireBower[$packageName]}'");
+                        if (isset($requireBower[$packageName])) {
+                            $v = VersionMatcher::matchVersions($requireBower[$packageName], $versionConstraint);
+                            echo "{$requireBower[$packageName]} + $versionConstraint => $v\n";
+                            if ($v === false) {
+                                throw new \Exception("{$package->getName()} requires $packageName '$versionConstraint' but we have already incompatible '{$requireBower[$packageName]}'");
+                            }
+                        } else {
+                            $v = $versionConstraint;
                         }
                         $requireBower[$packageName] = $v;
                     }
