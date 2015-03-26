@@ -19,6 +19,7 @@ class VersionMatcherTest extends \PHPUnit_Framework_TestCase
             array('*', '*', '*'),
             array('foo/foo#master', 'foo/foo#master', 'foo/foo#master'),
             array(false, '1.0', 'foo/foo#master'),
+            array('4.2.1-883', '4.2.1-883', '4.2.*'),
         );
     }
 

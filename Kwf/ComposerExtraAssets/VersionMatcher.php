@@ -24,9 +24,12 @@ class VersionMatcher
             return $version1;
         }
 
+        $v1 = self::_normalizeVersion($version1);
+        $v2 = self::_normalizeVersion($version2);
+
         try {
-            $v1 = Constraint::parse($version1);
-            $v2 = Constraint::parse($version2);
+            $v1 = Constraint::parse($v1);
+            $v2 = Constraint::parse($v2);
         } catch (\UnexpectedValueException $e) {
             return false;
         }
@@ -38,5 +41,12 @@ class VersionMatcher
         } else {
             return false;
         }
+    }
+    private static function _normalizeVersion($v)
+    {
+        if (preg_match('#^(\d+\.\d+\.\d+)-(\d+)$#', $v, $m)) {
+            $v = $m[1].'.'.$m[2];
+        }
+        return $v;
     }
 }
