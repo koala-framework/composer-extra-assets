@@ -202,22 +202,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         
         $binaries = glob("node_modules/.bin/*");
         foreach ($binaries as $binary) {
-        	$linkWriter->writeLink($binary);
-            /*$binDir = $this->composer->getConfig()->get('bin-dir');
-
-            
-            // TODO: symlink does not work on Windows
-            // PLUS: script tries to find node in the path, and we are not sure to have it there!
-            // We need to write scripts instead!!!
-            $realBinary = realpath($binary);
-            chdir($binDir);
-            if (file_exists(basename($binary))) {
-                unlink(basename($binary));
-            }
-            $result = symlink($this->makePathRelative(dirname($realBinary), $binDir).basename($realBinary), basename($binary));
-			if ($result == false) {
-				throw new \Exception(error_get_last());
-			}*/
+            $linkWriter->writeLink($binary);
         }
         
         chdir($prevCwd);
