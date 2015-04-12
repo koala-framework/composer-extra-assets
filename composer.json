@@ -6,7 +6,7 @@
     "type": "composer-plugin",
     "require": {
         "composer-plugin-api": "1.0.0",
-        "mouf/nodejs-installer": "~1.0",
+        "mouf/nodejs-installer": ">=1.0.2 <2.0",
         "version/version": "~2.0"
     },
     "require-dev": {
@@ -16,7 +16,7 @@
         "class": "Kwf\\ComposerExtraAssets\\Plugin",
         "mouf": {
             "nodejs": {
-                "version": ">=1.0.2 <2.0"
+                "version": ">=0.10"
             }
         },
         "branch-alias": {
