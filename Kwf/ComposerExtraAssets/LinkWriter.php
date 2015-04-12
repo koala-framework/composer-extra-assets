@@ -57,7 +57,7 @@ DIR=\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" && pwd )
     
 export PATH=\$DIR:\$PATH
     
-%s $@
+\$DIR/%s $@
 EOT;
     	$completePath = $this->binaryDir.DIRECTORY_SEPARATOR.$fileName;
     	file_put_contents($completePath, sprintf($fileContent, $relativePathToTarget));

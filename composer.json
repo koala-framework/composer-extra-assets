@@ -16,7 +16,7 @@
         "class": "Kwf\\ComposerExtraAssets\\Plugin",
         "mouf": {
             "nodejs": {
-                "version": ">=0.10"
+                "version": ">=1.0.2 <2.0"
             }
         },
         "branch-alias": {
