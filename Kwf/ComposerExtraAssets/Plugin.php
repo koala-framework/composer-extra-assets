@@ -158,7 +158,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         if ($dependencies) {
-            $this->_installNpmDependencies($path, $dependencies);
+            if ($path == '.' || (isset($extra['expose-npm-binaries']) && $extra['expose-npm-binaries'] == true)) {
+                $this->_installNpmDependencies($path, $dependencies);
+            }
         }
     }
 
