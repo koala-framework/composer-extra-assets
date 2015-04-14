@@ -40,8 +40,9 @@ Some NPM packages provide binary files (for instance `gulp` and `grunt`).
 NPM binaries will be exposed in the `vendor/bin` directory if the NPM dependency is declared in the **root Composer 
 package**.
 
-If you are writing a package and want a NPM binary to be exposed in `vendor/bin`, you can add the `expose-npm-binaries`
-attribute to the composer `extra` session:
+If you are writing a package and want a NPM package to be available in the `node_modules` directory of Composer's root
+ (instead of the `node_modules` directory of your package), you can add the `expose-npm-packages`
+attribute to the composer `extra` session of your package:
  
      "require": {
          "koala-framework/composer-extra-assets": "~1.1"
@@ -50,6 +51,6 @@ attribute to the composer `extra` session:
          "require-npm": {
              "gulp": "*"
          },
-         "expose-npm-binaries": true
+         "expose-npm-packages": true
      }
 
