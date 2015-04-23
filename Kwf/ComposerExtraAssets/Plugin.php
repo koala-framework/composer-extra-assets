@@ -34,14 +34,24 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     public function onPostUpdateInstall(Event $event)
     {
-        $this->_installNpm('.', $this->composer->getPackage(), $event->isDevMode());
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+        $mergedNpmPackages = array();
+        // NPM install for dependencies that are not exposed.
         foreach ($packages as $package){
             if ($package instanceof \Composer\Package\CompletePackage) {
-
-                $this->_installNpm($this->composer->getConfig()->get('vendor-dir') . '/' .$package->getName(), $package, false);
+                $extra = $package->getExtra();
+                if (!isset($extra['expose-npm-packages']) || $extra['expose-npm-packages'] != true) {
+                    $this->_installNpm($this->composer->getConfig()->get('vendor-dir') . '/' .$package->getName(), $package, false, array());
+                } else {
+                    $mergedNpmPackages[] = $package;
+                }
             }
         }
+
+        // NPM install for dependencies that are exposed on the root package.
+        $this->_installNpm('.', $this->composer->getPackage(), $event->isDevMode(), $mergedNpmPackages);
+
+        $this->_createNpmBinaries();
 
         $requireBower = array();
 
@@ -141,25 +151,52 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
     }
 
-    private function _installNpm($path, $package, $devMode)
+    private function _installNpm($path, $package, $devMode, array $mergedPackages)
     {
         $dependencies = array();
 
         $extra = $package->getExtra();
         if ($devMode) {
             if (isset($extra['require-dev-npm']) && count($extra['require-dev-npm'])) {
-                $dependencies = array_merge($dependencies, $extra['require-dev-npm']);
+                $dependencies = $this->mergeNpmVersions($dependencies, $extra['require-dev-npm']);
             }
 
         }
 
         if (isset($extra['require-npm']) && count($extra['require-npm'])) {
-            $dependencies = array_merge($dependencies, $extra['require-npm']);
+            $dependencies = $this->mergeNpmVersions($dependencies, $extra['require-npm']);
+        }
+
+        foreach ($mergedPackages as $dep) {
+            $packageExtra = $dep->getExtra();
+            if (isset($packageExtra['require-npm']) && count($packageExtra['require-npm'])) {
+                $dependencies = $this->mergeNpmVersions($dependencies, $packageExtra['require-npm']);
+            }
         }
 
         if ($dependencies) {
             $this->_installNpmDependencies($path, $dependencies);
         }
+    }
+
+    /**
+     * Merges 2 version of arrays.
+     *
+     * @param array $array1
+     * @param array $array2
+     * @return array
+     */
+    private function mergeNpmVersions(array $array1, array $array2) {
+        foreach ($array2 as $package => $version) {
+            if (!isset($array1[$package])) {
+                $array1[$package] = $version;
+            } else {
+                if ($array1[$package] != $version) {
+                    $array1[$package] .= " ".$version;
+                }
+            }
+        }
+        return $array1;
     }
 
     private function _installNpmDependencies($path, $dependencies)
@@ -196,7 +233,18 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         unlink('package.json');
+
         chdir($prevCwd);
     }
-}
 
+    private function _createNpmBinaries() {
+        // Let's link binaries, if any:
+        $linkWriter = new LinkWriter($this->composer->getConfig()->get('bin-dir'));
+
+        $binaries = glob("node_modules/.bin/*");
+        foreach ($binaries as $binary) {
+            $linkWriter->writeLink($binary);
+        }
+    }
+
+}
