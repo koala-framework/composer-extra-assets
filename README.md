@@ -54,3 +54,16 @@ attribute to the composer `extra` session of your package:
          "expose-npm-packages": true
      }
 
+
+### Generated files
+
+This plugin will automatically generate 3 files: `.bowerrc`, `bower.json`, `package.json`/
+
+Unless you have special requirements, you can ignore those 3 files in you VCSto your `.gitignore`:
+
+.gitignore
+
+    vendor/
+    .bowerrc
+    bower.json
+    package.json
