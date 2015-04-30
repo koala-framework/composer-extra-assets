@@ -243,6 +243,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             throw new \RuntimeException('npm prune failed');
         }
 
+        if ($path != '.') {
+            unlink('package.json');
+        }
+
         chdir($prevCwd);
     }
 
