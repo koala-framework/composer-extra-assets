@@ -4,6 +4,7 @@ namespace Kwf\ComposerExtraAssets;
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
+use Composer\Json\JsonFile;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 
@@ -111,8 +112,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $bowerBin = 'bower';
             }
 
-            if (file_exists('bower.json')) {
-                $packageJson = json_decode(file_get_contents('bower.json'), true);
+            $jsonFile = new JsonFile('bower.json');
+
+            if ($jsonFile->exists()) {
+                $packageJson = $jsonFile->read();
                 if ($packageJson['name'] != 'temp-composer-extra-asssets') { //assume we can overwrite our own temp one
                     throw new \Exception("Can't install npm dependencies as there is already a bower.json");
                 }
@@ -125,8 +128,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 );
             }
             $packageJson['dependencies'] = $requireBower;
-            file_put_contents('bower.json', json_encode($packageJson,  JSON_PRETTY_PRINT |  JSON_UNESCAPED_SLASHES |
-                JSON_UNESCAPED_UNICODE));
+            $jsonFile->write($packageJson);
             if (!file_exists('.bowerrc')) {
                 $vd = $this->composer->getConfig()->get('vendor-dir');
                 if (substr($vd, 0, strlen(getcwd())) == getcwd()) {
@@ -208,8 +210,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $prevCwd = getcwd();
         chdir($path);
-        if (file_exists('package.json')) {
-            $packageJson = json_decode(file_get_contents('package.json'), true);
+        $jsonFile = new JsonFile('package.json');
+        if ($jsonFile->exists()) {
+            $packageJson = $jsonFile->read();
             if ($packageJson['name'] != 'composer-extra-asssets') { //assume we can overwrite our own temp one
                 throw new \Exception("Can't install npm dependencies as there is already a package.json");
             }
@@ -224,9 +227,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             );
         }
         $packageJson['dependencies'] = $dependencies;
-
-        file_put_contents('package.json', json_encode($packageJson,  JSON_PRETTY_PRINT |  JSON_UNESCAPED_SLASHES |
-            JSON_UNESCAPED_UNICODE));
+        $jsonFile->write($packageJson);
         $this->io->write("");
         $this->io->write("installing npm dependencies in '$path'...");
         $npm = $this->composer->getConfig()->get('bin-dir').'/npm';

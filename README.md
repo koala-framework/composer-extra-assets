@@ -59,7 +59,8 @@ attribute to the composer `extra` session of your package:
 
 This plugin will automatically generate 3 files: `.bowerrc`, `bower.json`, `package.json`/
 
-Unless you have special requirements, you can ignore those 3 files in you VCSto your `.gitignore`:
+Unless you have special requirements, you can ignore those 3 files in your VCS. If you are using GIT, 
+add this to your `.gitignore`:
 
 .gitignore
 
