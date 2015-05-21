@@ -116,7 +116,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
             if ($jsonFile->exists()) {
                 $packageJson = $jsonFile->read();
-                if ($packageJson['name'] != 'temp-composer-extra-asssets') { //assume we can overwrite our own temp one
+                if (!isset($packageJson['name']) || $packageJson['name'] != 'temp-composer-extra-asssets') { //assume we can overwrite our own temp one
                     throw new \Exception("Can't install npm dependencies as there is already a bower.json");
                 }
             } else {
@@ -213,7 +213,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $jsonFile = new JsonFile('package.json');
         if ($jsonFile->exists()) {
             $packageJson = $jsonFile->read();
-            if ($packageJson['name'] != 'composer-extra-asssets') { //assume we can overwrite our own temp one
+            if (!isset($packageJson['name']) || $packageJson['name'] != 'composer-extra-asssets') { //assume we can overwrite our own temp one
                 throw new \Exception("Can't install npm dependencies as there is already a package.json");
             }
         } else {
