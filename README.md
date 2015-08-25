@@ -68,3 +68,9 @@ add this to your `.gitignore`:
     .bowerrc
     bower.json
     package.json
+
+### Lock
+
+This plugin will generate a file named `composer-extra-assets.lock` which can be used just like `composer.lock`. Put it
+under version control if you want to be able to install the exact same dependencies.
+
