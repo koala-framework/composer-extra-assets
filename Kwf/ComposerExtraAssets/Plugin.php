@@ -8,8 +8,6 @@ use Composer\Json\JsonFile;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 
-use Kwf\ComposerExtraAssets\VersionMatcher;
-
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
     protected $composer;
@@ -104,17 +102,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if ($event->isDevMode()) {
             $extra = $this->composer->getPackage()->getExtra();
             if (isset($extra['require-dev-bower'])) {
-                foreach ($extra['require-dev-bower'] as $packageName => $versionConstraint) {
-                    if (isset($requireBower[$packageName])) {
-                        $v = VersionMatcher::matchVersions($requireBower[$packageName], $versionConstraint);
-                        if ($v === false) {
-                            throw new \Exception("{$package->getName()} requires $packageName '$versionConstraint' but we have already incompatible '{$requireBower[$packageName]}'");
-                        }
-                    } else {
-                        $v = $versionConstraint;
-                    }
-                    $requireBower[$packageName] = $v;
-                }
+                $requireBower = $this->_mergeDependencyVersions($requireBower, $extra['require-dev-bower']);
             }
         }
 
@@ -126,17 +114,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             if ($package instanceof \Composer\Package\CompletePackage) {
                 $extra = $package->getExtra();
                 if (isset($extra['require-bower'])) {
-                    foreach ($extra['require-bower'] as $packageName => $versionConstraint) {
-                        if (isset($requireBower[$packageName])) {
-                            $v = VersionMatcher::matchVersions($requireBower[$packageName], $versionConstraint);
-                            if ($v === false) {
-                                throw new \Exception("{$package->getName()} requires $packageName '$versionConstraint' but we have already incompatible '{$requireBower[$packageName]}'");
-                            }
-                        } else {
-                            $v = $versionConstraint;
-                        }
-                        $requireBower[$packageName] = $v;
-                    }
+                    $requireBower = $this->_mergeDependencyVersions($requireBower, $extra['require-bower']);
                 }
             }
         }
@@ -231,19 +209,19 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $extra = $package->getExtra();
         if ($devMode) {
             if (isset($extra['require-dev-npm']) && count($extra['require-dev-npm'])) {
-                $dependencies = $this->mergeNpmVersions($dependencies, $extra['require-dev-npm']);
+                $dependencies = $this->_mergeDependencyVersions($dependencies, $extra['require-dev-npm']);
             }
 
         }
 
         if (isset($extra['require-npm']) && count($extra['require-npm'])) {
-            $dependencies = $this->mergeNpmVersions($dependencies, $extra['require-npm']);
+            $dependencies = $this->_mergeDependencyVersions($dependencies, $extra['require-npm']);
         }
 
         foreach ($mergedPackages as $dep) {
             $packageExtra = $dep->getExtra();
             if (isset($packageExtra['require-npm']) && count($packageExtra['require-npm'])) {
-                $dependencies = $this->mergeNpmVersions($dependencies, $packageExtra['require-npm']);
+                $dependencies = $this->_mergeDependencyVersions($dependencies, $packageExtra['require-npm']);
             }
         }
 
@@ -261,7 +239,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @param array $array2
      * @return array
      */
-    private function mergeNpmVersions(array $array1, array $array2) {
+    private function _mergeDependencyVersions(array $array1, array $array2) {
         foreach ($array2 as $package => $version) {
             if (!isset($array1[$package])) {
                 $array1[$package] = $version;
