@@ -223,6 +223,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     "modify this file but the 'dependencies' section will be overwritten each time you run " .
                     "composer install or composer update. You must not change the 'name' section.",
                 'readme' => ' ',
+                'license' => 'UNKNOWN',
                 'repository' => array('type'=>'git'),
             );
         }
