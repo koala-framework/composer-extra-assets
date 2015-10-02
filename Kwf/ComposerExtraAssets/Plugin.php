@@ -59,9 +59,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $this->_installNpm('.', $this->composer->getPackage(), $event->isDevMode(), $mergedNpmPackages, $assetsLock['npm-dependencies']['self']);
             }
 
-            if ($assetsLock['bower-dependencies']) {
-                $this->_installBower($assetsLock['bower-dependencies']);
-            }
+            $this->_installBower($assetsLock['bower-dependencies']);
         }
     }
 
@@ -119,9 +117,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
         }
 
-        if ($requireBower) {
-            $assetsLock['bower-dependencies'] = $this->_installBower($requireBower);
-        }
+        $assetsLock['bower-dependencies'] = $this->_installBower($requireBower);
 
         $assetsLockFile = new JsonFile('composer-extra-assets.lock');
         $assetsLockFile->write($assetsLock);
