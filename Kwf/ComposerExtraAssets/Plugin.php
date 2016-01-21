@@ -325,7 +325,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         if (!$shrinkwrapDependencies) {
-            $cmd = "$npm update --depth=9999";
+            $cmd = "$npm update --depth=9";
             passthru($cmd, $retVar);
             if ($retVar) {
                 throw new \RuntimeException('npm update failed');
