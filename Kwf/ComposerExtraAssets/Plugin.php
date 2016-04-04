@@ -190,7 +190,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $ret = array();
         foreach ($installedBowerFiles as $installedBowerFile) {
             $installedBower = json_decode(file_get_contents($installedBowerFile), true);
-            $dep = $installedBower['_source'].'#'.$installedBower['_release'];
+            if (isset($installedBower['_resolution']['type']) && $installedBower['_resolution']['type'] == 'commit') {
+                //when resolution.type = commit we can't use _release as the commit sha1 is shortened and that doesn't always work
+                $dep = $installedBower['_source'].'#'.$installedBower['_resolution']['commit'];
+            } else {
+                $dep = $installedBower['_source'].'#'.$installedBower['_release'];
+            }
             $ret[$installedBower['name']] = $dep;
         }
         return $ret;
