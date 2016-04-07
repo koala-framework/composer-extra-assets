@@ -182,7 +182,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             throw new \RuntimeException('bower prune failed');
         }
 
-
         $config = json_decode(file_get_contents('.bowerrc'), true);
         $installedBowerFiles = glob($config['directory'].'/*/.bower.json');
 
@@ -287,6 +286,15 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $prevCwd = getcwd();
         chdir($path);
+
+        if (file_exists('node_modules')) {
+            //recursively delete node_modules
+            //this is done to support shrinkwrap properly
+            foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator('node_modules', \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST) as $i) {
+                $i->isDir() && !$i->isLink() ? rmdir($i->getPathname()) : unlink($i->getPathname());
+            }
+        }
+
         $jsonFile = new JsonFile('package.json');
         if ($jsonFile->exists()) {
             $packageJson = $jsonFile->read();
@@ -329,34 +337,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             throw new \RuntimeException('npm install failed');
         }
 
-        if (!$shrinkwrapDependencies) {
-            $cmd = "$npm update";
-            passthru($cmd, $retVar);
-            if ($retVar) {
-                throw new \RuntimeException('npm update failed');
-            }
-        }
-
-        $cmd = "$npm prune";
-        passthru($cmd, $retVar);
-        if ($retVar) {
-            throw new \RuntimeException('npm prune failed');
-        }
-
         $cmd = "$npm shrinkwrap";
         passthru($cmd, $retVar);
         if ($retVar) {
             throw new \RuntimeException('npm shrinkwrap failed');
         }
         $shrinkwrap = json_decode(file_get_contents('npm-shrinkwrap.json'), true);
-
-        if ($shrinkwrapDependencies) {
-            if (!$this->_shrinkwrapVersionsEqual($shrinkwrap['dependencies'], $shrinkwrapDependencies)) {
-                //npm install doesn't downgrade packages in npm-shrinkwrap.json
-                throw new \RuntimeException("npm shrinkwrap returned different result than install should have produced. Probably packages need to be downgraded. Consider deleting '$path/node_modules'.");
-            }
-        }
-
 
         if ($path != '.') {
             unlink('package.json');
@@ -366,32 +352,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         chdir($prevCwd);
 
         return $shrinkwrap['dependencies'];
-    }
-
-    private function _shrinkwrapVersionsEqual($a, $b)
-    {
-        foreach ($a as $depName=>$i) {
-            if (!isset($b[$depName]['version'])) {
-                return false;
-            }
-            if ($b[$depName]['version'] != $i['version']) {
-                return false;
-            }
-            if (isset($b[$depName]['dependencies']) != isset($i['dependencies'])) {
-                return false;
-            }
-            if (isset($i['dependencies'])) {
-                if (!$this->_shrinkwrapVersionsEqual($i['dependencies'], $b[$depName]['dependencies'])) {
-                    return false;
-                }
-            }
-        }
-        foreach ($b as $depName=>$i) {
-            if (!isset($a[$depName])) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private function _createNpmBinaries() {
