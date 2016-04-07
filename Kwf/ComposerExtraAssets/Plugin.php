@@ -337,12 +337,16 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             throw new \RuntimeException('npm install failed');
         }
 
-        $cmd = "$npm shrinkwrap";
-        passthru($cmd, $retVar);
-        if ($retVar) {
-            throw new \RuntimeException('npm shrinkwrap failed');
+        $ret = null;
+        if (!$shrinkwrapDependencies) {
+            $cmd = "$npm shrinkwrap";
+            passthru($cmd, $retVar);
+            if ($retVar) {
+                throw new \RuntimeException('npm shrinkwrap failed');
+            }
+            $shrinkwrap = json_decode(file_get_contents('npm-shrinkwrap.json'), true);
+            $ret = $shrinkwrap['dependencies'];
         }
-        $shrinkwrap = json_decode(file_get_contents('npm-shrinkwrap.json'), true);
 
         if ($path != '.') {
             unlink('package.json');
@@ -351,7 +355,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         chdir($prevCwd);
 
-        return $shrinkwrap['dependencies'];
+        return $ret;
     }
 
     private function _createNpmBinaries() {
