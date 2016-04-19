@@ -171,13 +171,21 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->write("installing bower dependencies...");
 
         $cmd = "$bowerBin --allow-root install";
-        passthru($cmd, $retVar);
+
+        $descriptorspec = array();
+        $pipes = array();
+        $p = proc_open($cmd, $descriptorspec, $pipes);
+        $retVar = proc_close($p);
         if ($retVar) {
             throw new \RuntimeException('bower install failed');
         }
 
         $cmd = "$bowerBin --allow-root prune";
-        passthru($cmd, $retVar);
+
+        $descriptorspec = array();
+        $pipes = array();
+        $p = proc_open($cmd, $descriptorspec, $pipes);
+        $retVar = proc_close($p);
         if ($retVar) {
             throw new \RuntimeException('bower prune failed');
         }
@@ -224,9 +232,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->write("installing npm dependencies in '$path'...");
         $npm = $this->composer->getConfig()->get('bin-dir').'/npm';
         $cmd = "$npm install";
-        passthru($cmd, $retVar);
+
+        $descriptorspec = array();
+        $pipes = array();
+        $p = proc_open($cmd, $descriptorspec, $pipes);
+        $retVar = proc_close($p);
         if ($retVar) {
-            throw new \RuntimeException('npm install failed');
+            throw new \RuntimeException('npm install failed with: '.$retVar);
         }
         unlink('package.json');
         chdir($prevCwd);
@@ -331,16 +343,25 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->write("");
         $this->io->write("installing npm dependencies in '$path'...");
         $npm = $this->composer->getConfig()->get('bin-dir').'/npm';
-        $cmd = "$npm install";
-        passthru($cmd, $retVar);
+        $cmd = "npm install";
+
+        $descriptorspec = array();
+        $pipes = array();
+        $p = proc_open($cmd, $descriptorspec, $pipes);
+        $retVar = proc_close($p);
+
         if ($retVar) {
-            throw new \RuntimeException('npm install failed');
+            throw new \RuntimeException('npm install failed with '.$retVar);
         }
 
         $ret = null;
         if (!$shrinkwrapDependencies) {
             $cmd = "$npm shrinkwrap";
-            passthru($cmd, $retVar);
+
+            $descriptorspec = array();
+            $pipes = array();
+            $p = proc_open($cmd, $descriptorspec, $pipes);
+            $retVar = proc_close($p);
             if ($retVar) {
                 throw new \RuntimeException('npm shrinkwrap failed');
             }
