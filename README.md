@@ -25,6 +25,8 @@ composer.json
         },
         "require-dev-bower": {
             "qunit": "*"
+        },
+        "require-dev-npm": {
         }
     }
 
