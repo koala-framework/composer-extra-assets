@@ -109,7 +109,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         );
         $packages = array_merge($packages, $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages());
         foreach ($packages as $package){
-            if ($package instanceof \Composer\Package\CompletePackage) {
+            if ($package instanceof \Composer\Package\CompletePackageInterface) {
                 $extra = $package->getExtra();
                 if (isset($extra['require-bower'])) {
                     $requireBower = $this->_mergeDependencyVersions($requireBower, $extra['require-bower']);
