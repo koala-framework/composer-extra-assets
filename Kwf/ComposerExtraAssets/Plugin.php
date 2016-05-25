@@ -155,8 +155,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
         $packageJson['dependencies'] = $requireBower;
         $jsonFile->write($packageJson);
-        if($this->composer->getPackage()->getExtra() && isset($this->composer->getPackage()->getExtra()['.bowerrc'])){
-            file_put_contents('.bowerrc', json_encode($this->composer->getPackage()->getExtra()['.bowerrc']));
+        if ($this->composer->getPackage()->getExtra() && isset($this->composer->getPackage()->getExtra()['.bowerrc'])) {
+            file_put_contents('.bowerrc', json_encode($this->composer->getPackage()
+              ->getExtra()['.bowerrc'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES |
+              JSON_UNESCAPED_UNICODE));
         }
         if (!file_exists('.bowerrc')) {
             $vd = $this->composer->getConfig()->get('vendor-dir');
