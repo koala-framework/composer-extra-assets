@@ -170,7 +170,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->write("");
         $this->io->write("installing bower dependencies...");
 
-        $cmd = "$bowerBin --allow-root install";
+        $cmd = escapeshellarg($bowerBin) . " --allow-root install";
 
         $descriptorspec = array();
         $pipes = array();
@@ -180,7 +180,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             throw new \RuntimeException('bower install failed');
         }
 
-        $cmd = "$bowerBin --allow-root prune";
+        $cmd = escapeshellarg($bowerBin) ." --allow-root prune";
 
         $descriptorspec = array();
         $pipes = array();
@@ -231,7 +231,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->write("");
         $this->io->write("installing npm dependencies in '$path'...");
         $npm = $this->composer->getConfig()->get('bin-dir').'/npm';
-        $cmd = "$npm install";
+        $cmd = escapeshellarg($npm) . " install";
 
         $descriptorspec = array();
         $pipes = array();
@@ -343,7 +343,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->write("");
         $this->io->write("installing npm dependencies in '$path'...");
         $npm = $this->composer->getConfig()->get('bin-dir').'/npm';
-        $cmd = "npm install";
+        $cmd = escapeshellarg($npm) . " install";
 
         $descriptorspec = array();
         $pipes = array();
@@ -356,7 +356,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         $ret = null;
         if (!$shrinkwrapDependencies) {
-            $cmd = "$npm shrinkwrap";
+            $cmd = escapeshellarg($npm) . " shrinkwrap";
 
             $descriptorspec = array();
             $pipes = array();
