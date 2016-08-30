@@ -133,7 +133,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $dir = $this->composer->getConfig()->get('vendor-dir').'/koala-framework/composer-extra-assets';
             $this->_installLocalBower($dir);
             $node = $this->composer->getConfig()->get('bin-dir').'/node';
-            $bowerBin = "$node ".$dir . "/node_modules/bower/bin/bower";
+            $bowerBin = escapeshellarg($node).' '.escapeshellarg($dir . "/node_modules/bower/bin/bower");
         } else {
             $bowerBin = 'bower';
         }
@@ -170,7 +170,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->write("");
         $this->io->write("installing bower dependencies...");
 
-        $cmd = escapeshellarg($bowerBin) . " --allow-root install";
+        $cmd = $bowerBin . " --allow-root install";
 
         $descriptorspec = array();
         $pipes = array();
@@ -180,7 +180,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             throw new \RuntimeException('bower install failed');
         }
 
-        $cmd = escapeshellarg($bowerBin) ." --allow-root prune";
+        $cmd = $bowerBin ." --allow-root prune";
 
         $descriptorspec = array();
         $pipes = array();
