@@ -343,7 +343,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->write("");
         $this->io->write("installing npm dependencies in '$path'...");
         $npm = $this->composer->getConfig()->get('bin-dir').'/npm';
-        $cmd = "npm install";
+        $cmd = escapeshellarg($npm) . " install";
 
         $descriptorspec = array();
         $pipes = array();
