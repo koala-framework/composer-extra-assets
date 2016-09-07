@@ -299,8 +299,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $prevCwd = getcwd();
         chdir($path);
 
-        if (file_exists('node_modules/composer-extra-assets-installed.json')) {
-            $installed = json_decode(file_get_contents('node_modules/composer-extra-assets-installed.json'), true);
+        if (file_exists('node_modules/.composer-extra-assets-installed.json')) {
+            $installed = json_decode(file_get_contents('node_modules/.composer-extra-assets-installed.json'), true);
             if ($installed == $shrinkwrapDependencies) {
                 $this->io->write("npm dependencies in '$path' are up to date...");
                 chdir($prevCwd);
@@ -385,7 +385,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         $installed = $shrinkwrapDependencies;
         if (!$installed) $installed = $ret;
-        file_put_contents('node_modules/composer-extra-assets-installed.json', json_encode($installed));
+        file_put_contents('node_modules/.composer-extra-assets-installed.json', json_encode($installed));
 
         chdir($prevCwd);
 
