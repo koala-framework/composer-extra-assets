@@ -5,10 +5,11 @@
     "license": "BSD-2-Clause",
     "type": "composer-plugin",
     "require": {
-        "composer-plugin-api": "^1.0",
+        "composer-plugin-api": "^1.0 || ^2.0",
         "mouf/nodejs-installer": ">=1.0.2 <2.0"
     },
     "require-dev": {
+        "composer/composer": "^2.0",
         "phpunit/phpunit": "4.5.*"
     },
     "extra": {
@@ -33,5 +34,10 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "mouf/nodejs-installer": true
+        }
+    }
 }

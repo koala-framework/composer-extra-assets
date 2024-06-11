@@ -401,4 +401,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $linkWriter->writeLink($binary);
         }
     }
+
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+    }
+
+    public function uninstall(Composer $composer, IOInterface $io)
+    {
+    }
 }
