@@ -188,5 +188,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         unlink('package.json');
         chdir($prevCwd);
     }
+
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+    }
+
+    public function uninstall(Composer $composer, IOInterface $io)
+    {
+    }
 }
 
