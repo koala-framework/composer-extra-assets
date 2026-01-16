@@ -5,8 +5,11 @@
     "license": "BSD-2-Clause",
     "type": "composer-plugin",
     "require": {
-        "composer-plugin-api": "^1.0",
+        "composer-plugin-api": "^1.0 || ^2.0",
         "mouf/nodejs-installer": "~1.0"
+    },
+    "require-dev": {
+        "composer/composer": "^1.0"
     },
     "extra": {
         "class": "Kwf\\ComposerExtraAssets\\Plugin",
@@ -22,6 +25,11 @@
     "autoload": {
         "psr-4": {
             "Kwf\\ComposerExtraAssets\\": "Kwf/ComposerExtraAssets"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "mouf/nodejs-installer": true
         }
     }
 }
